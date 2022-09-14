@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, Pressable, View, Button, ScrollView } from 'react-native';
+import { StyleSheet, Text, TextInput, Pressable, View, Button, ScrollView, Alert, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useForm, Controller } from 'react-hook-form';
 import {Picker} from '@react-native-picker/picker';
@@ -16,50 +16,77 @@ export default function App() {
   const [deck, setDeck] = useState('');
   const [side, setSide] = useState('');
   const [destiny, setDestiny] = useState('');
-  const {control, handleSubmit, formState: {errors} } = useForm({
+  //CAMBIAAAAAAAR
+  const [transported, setTransported] = useState(false);
+  const {control, handleSubmit, formState: {errors}, getValues } = useForm({
     defaultValues: {
       name: '',
       email: '',
       phone: '',
       age: '',
-      country: '',
+      country: "none",
       cryo_sleep: false,
       vip: false,
-      room_service: '',
-      food_court: '',
-      shopping_mall: '',
-      spa: '',
-      vr_deck: '',
-      passenger_group: '',
-      home_planet: '',
-      deck: '',
-      side: '',
-      destiny: ''
+      room_service: 0,
+      food_court: 0,
+      shopping_mall: 0,
+      spa: 0,
+      vr_deck: 0,
+      passenger_group: "1",
+      home_planet: "Earth",
+      deck: "A",
+      side: "T",
+      destiny: "55 Cancri e"
     }
   });
 
   const onSubmit = async (data) => {
-    data.country = country;
-    data.passenger_group = passengerGroup;
-    data.home_planet = homePlanet;
-    data.deck = deck;
-    data.side = side;
-    data.destiny = destiny;
-    const response = await fetch('http://3.88.193.156:8080/spaceship/getPrediction', {method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
-    const json = await response.json();
+    country !== "" ? data.country = country : data.country;
+    passengerGroup !== "" ? data.passenger_group = passengerGroup : data.passenger_group;
+    homePlanet !== "" ? data.home_planet = homePlanet : data.home_planet;
+    deck !== "" ? data.deck = deck : data.deck;
+    side !== "" ? data.side = side : data.side;
+    destiny !== "" ? data.destiny = destiny : data.destiny;
+    //const response = await fetch('http://3.88.193.156:8080/spaceship/getPrediction', {method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+    //const json = await response.json();
     console.log(data);
-    console.log(json);
+    //console.log(json);
+    //setTransported(json.Transported);
+    console.log(transported);
   };
+
+  const sendEmail = async () => {
+    //Here send email
+    console.log(getValues("email"));
+  }
 
   function HomeScreen({navigation}) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Home Screen</Text>
-        <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('UserData')}
-        />
-      </View>
+      <ScrollView>
+      <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
+        <Text style={styles.titles}>Welcome to Perros Sarnosos KFC</Text>
+        <Image source={require('./assets/spaceship_titanic_no_bg.png')} />
+        <Text style={styles.text}>
+          We are a specialized insurance agency that cares about your security in outer space trips.
+        </Text>
+        <Text style={styles.text}>
+          We make sure that you are prepared for your trip using a Machine Learning model that can predict accurately your chances of surviving.
+        </Text>
+        <Text style={styles.text}>
+          Here are some graphs that show the insights of our clients:
+        </Text>
+        <Text style={styles.text}>
+          INSERTE GRÁFICAS PERRONAS AQUÍ XD 
+        </Text>
+        <Pressable style={styles.button} onPress={() => {
+            navigation.navigate('UserData')
+            }}>
+            <Text style={styles.bold_text}>
+              View my chances
+            </Text>
+          </Pressable>
+      </LinearGradient>
+      </ScrollView>
     );
   }
 
@@ -701,7 +728,10 @@ export default function App() {
           />
           {errors.destiny && <Text style={styles.alert_text}>This is required.</Text>}  
 
-        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
+        <Pressable style={styles.button} onPress={() => {
+          handleSubmit(onSubmit)()
+          navigation.navigate('Result')
+          }}>
           <Text style={styles.bold_text}>Submit</Text>
         </Pressable>
 
@@ -716,11 +746,54 @@ export default function App() {
   }
 
   function Result({navigation}) {
-    return(
-      <Text>
-        Hola
-      </Text>
-    );
+    if(transported){
+      return(
+        <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
+          <Text style={styles.titles}>
+            Congratulations! your profile meets the requirements to survive the trip.
+          </Text>
+          <Text style={styles.text}>
+            Do yo wish to know more about how we work and stats related to more trips?
+            Visit our homepage with the button down below.
+          </Text>
+          <Pressable style={styles.button} onPress={() => {
+            navigation.navigate('Home')
+            }}>
+            <Text style={styles.bold_text}>Go back home</Text>
+          </Pressable>
+        </LinearGradient>
+      );
+    }else{
+      return(
+        <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
+          <Text style={styles.titles}>
+            Sorry, your profile doesn't meet the requirements to survive the trip.
+          </Text>
+          <Text style={styles.text}>
+            But don't worry, we can help you to increase your chances of surviving.
+            Press the button below to send you an email with all the information you need to know to improve your chances!.
+          </Text>
+          <Pressable style={styles.button} onPress={() => {
+            sendEmail();
+            Alert.alert("Email sent!", 
+            "We have sent you an email to your personal account. If the email hasn't arrived, please try again.",
+            [
+              {
+                text: "Try again",
+                onPress: () => sendEmail()
+              },
+              {
+                text: "Dismiss",
+                onPress: () => console.log("Dismiss!")
+              }
+            ]);
+            navigation.navigate('Home');
+            }}>
+            <Text style={styles.bold_text}>Increase my chances!</Text>
+          </Pressable>
+        </LinearGradient>
+      );
+    }
   }
 
   const Stack = createNativeStackNavigator();
@@ -794,6 +867,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 20,
-    textAlign: 'center'
+    textAlign: 'center',
+    margin: 10
   }
 });
