@@ -1,26 +1,50 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, Pressable, View, Button} from 'react-native';
+import { StyleSheet, Text, TextInput, Pressable, View, Button, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useForm, Controller } from 'react-hook-form';
 import {Picker} from '@react-native-picker/picker';
 import React, { useState } from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Checkbox from 'expo-checkbox';
 
 export default function App() {
-  const [age, setAge] = useState(0);
-  const [country, setCountry] = useState();
+  const [checked, setChecked] = useState(false);
+  const [country, setCountry] = useState('');
+  const [passengerGroup, setPassengerGroup] = useState('');
+  const [homePlanet, setHomePlanet] = useState('');
+  const [deck, setDeck] = useState('');
+  const [side, setSide] = useState('');
+  const [destiny, setDestiny] = useState('');
   const {control, handleSubmit, formState: {errors} } = useForm({
     defaultValues: {
       name: '',
       email: '',
       phone: '',
       age: '',
-      country: ''
+      country: '',
+      cryo_sleep: false,
+      vip: false,
+      room_service: '',
+      food_court: '',
+      shopping_mall: '',
+      spa: '',
+      vr_deck: '',
+      passenger_group: '',
+      home_planet: '',
+      deck: '',
+      side: '',
+      destiny: ''
     }
   });
 
   const onSubmit = async (data) => {
+    data.country = country;
+    data.passenger_group = passengerGroup;
+    data.home_planet = homePlanet;
+    data.deck = deck;
+    data.side = side;
+    data.destiny = destiny;
     //const response = await fetch(ip_ec2);
     //const json = await response.json();
     console.log(data);
@@ -41,9 +65,10 @@ export default function App() {
 
   function UserData({navigation}) {
     return (
+    <ScrollView>
       <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
       
-        <Text style={styles.titles}>Welcome, are you ready to travel across the space?</Text>
+        <Text style={styles.titles}>Are you ready to travel across the space?</Text>
         <StatusBar style="dark" />
 
         <Controller
@@ -143,14 +168,17 @@ export default function App() {
           rules={{
           required: false,
           }} 
-          render={({ field: { onChange, onBlur } }) => (
+          render={({ field: { onBlur, value } }) => (
             <React.Fragment>
               <Text style={styles.text}>Where do you live?</Text>
               <Picker
               prompt="Select your country"
-              onValueChange={onChange}
+              onValueChange={(item) => {
+                setCountry(item);
+              }}
               onBlur={onBlur}
-              value={country}
+              selectedValue={country}
+              value={value}
               style={styles.input}
               >
                 <Picker.Item label="Afghanistan" value="afghanistan" />
@@ -354,10 +382,326 @@ export default function App() {
         />
         {errors.country && <Text style={styles.alert_text}>This is required.</Text>}  
 
-        <Pressable style={styles.button} onPress={() => {
-          handleSubmit(onSubmit);
-          navigation.navigate('Formulary');
-        }}>
+        <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>Would you like to be cryosleeped?</Text>
+              <Checkbox 
+                style={{margin: 10}}
+                value={value}
+                onValueChange={onChange}
+                onBlur={onBlur}
+                color={checked ? '#4630EB' : undefined}
+              />
+            </React.Fragment>
+          )}
+          name="cryo_sleep" 
+        />
+
+        <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>Are you a VIP passenger?</Text>
+              <Checkbox 
+                style={{margin: 10}}
+                value={value}
+                onValueChange={onChange}
+                onBlur={onBlur}
+                color={checked ? '#4630EB' : undefined}
+              />
+            </React.Fragment>
+          )}
+          name="vip" 
+        />
+
+        <Controller
+          control={control}
+          rules={{
+          required: true,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>How much do you plan to spend on the room service?</Text>
+              <TextInput 
+              placeholder="Type the quantity"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={true}
+              keyboardType={"number-pad"}
+              returnKeyType="done" 
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+            </React.Fragment>
+          )}
+          name="room_service" 
+        />
+        {errors.room_service && <Text style={styles.alert_text}>This is required.</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+          required: true,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>How much do you plan to spend on the food court?</Text>
+              <TextInput 
+              placeholder="Type the quantity"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={true}
+              keyboardType={"number-pad"}
+              returnKeyType="done" 
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+            </React.Fragment>
+          )}
+          name="food_court" 
+        />
+        {errors.food_court && <Text style={styles.alert_text}>This is required.</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+          required: true,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>How much do you plan to spend on the shopping mall?</Text>
+              <TextInput 
+              placeholder="Type the quantity"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={true}
+              keyboardType={"number-pad"}
+              returnKeyType="done" 
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+            </React.Fragment>
+          )}
+          name="shopping_mall" 
+        />
+        {errors.shopping_mall && <Text style={styles.alert_text}>This is required.</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+          required: true,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>How much do you plan to spend on the spa?</Text>
+              <TextInput 
+              placeholder="Type the quantity"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={true}
+              keyboardType={"number-pad"}
+              returnKeyType="done" 
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+            </React.Fragment>
+          )}
+          name="spa" 
+        />
+        {errors.spa && <Text style={styles.alert_text}>This is required.</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+          required: true,
+          }} 
+          render={({ field: { onChange, onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>How much do you plan to spend on the VR deck?</Text>
+              <TextInput 
+              placeholder="Type the quantity"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={true}
+              keyboardType={"number-pad"}
+              returnKeyType="done" 
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+            </React.Fragment>
+          )}
+          name="vr_deck" 
+        />
+        {errors.vr_deck && <Text style={styles.alert_text}>This is required.</Text>}
+
+        <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>What's your origin planet?</Text>
+              <Picker
+              prompt="Select your planet"
+              selectedValue={homePlanet}
+              onValueChange={(item) => {
+                setHomePlanet(item);
+              }}
+              onBlur={onBlur}
+              value={value}
+              style={styles.input}
+              >
+                <Picker.Item label="Earth" value="earth" />
+                <Picker.Item label="Europa" value="europa" />
+                <Picker.Item label="Mars" value="mars" />
+              </Picker>
+            </React.Fragment>
+          )} 
+          name="home_planet"
+          />
+          {errors.home_planet && <Text style={styles.alert_text}>This is required.</Text>}
+
+          <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>What's your passenger group?</Text>
+              <Picker
+              prompt="Select your group"
+              selectedValue={passengerGroup}
+              onValueChange={(item) => {
+                setPassengerGroup(item);
+              }}
+              onBlur={onBlur}
+              value={value}
+              style={styles.input}
+              >
+                <Picker.Item label="1" value={1} />
+                <Picker.Item label="2" value={2} />
+                <Picker.Item label="3" value={3} />
+                <Picker.Item label="4" value={4} />
+                <Picker.Item label="5" value={5} />
+                <Picker.Item label="6" value={6} />
+                <Picker.Item label="7" value={7} />
+                <Picker.Item label="8" value={8} />
+              </Picker>
+            </React.Fragment>
+          )} 
+          name="home_planet"
+          />
+          {errors.home_planet && <Text style={styles.alert_text}>This is required.</Text>}   
+
+          <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>On what deck is your cabin located?</Text>
+              <Picker
+              prompt="Select your deck"
+              onValueChange={(item) => {
+                setDeck(item);
+              }}
+              onBlur={onBlur}
+              selectedValue={deck}
+              value={value}
+              style={styles.input}
+              >
+                <Picker.Item label="A" value="a" />
+                <Picker.Item label="B" value="b" />
+                <Picker.Item label="C" value="c" />
+                <Picker.Item label="D" value="d" />
+                <Picker.Item label="E" value="e" />
+                <Picker.Item label="F" value="f" />
+                <Picker.Item label="G" value="g" />
+              </Picker>
+            </React.Fragment>
+          )} 
+          name="deck"
+          />
+          {errors.deck && <Text style={styles.alert_text}>This is required.</Text>}
+
+          <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>On what side is your cabin located?</Text>
+              <Picker
+              prompt="Select your side"
+              selectedValue={side}
+              onValueChange={(item) => {
+                setSide(item);
+              }}
+              onBlur={onBlur}
+              value={value}
+              style={styles.input}
+              >
+                <Picker.Item label="T" value="t" />
+                <Picker.Item label="P" value="p" />
+                <Picker.Item label="S" value="s" />
+              </Picker>
+            </React.Fragment>
+          )} 
+          name="side"
+          />
+          {errors.side && <Text style={styles.alert_text}>This is required.</Text>} 
+
+          <Controller
+          control={control}
+          rules={{
+          required: false,
+          }} 
+          render={({ field: { onBlur, value } }) => (
+            <React.Fragment>
+              <Text style={styles.text}>What's your destiny?</Text>
+              <Picker
+              prompt="Select your destiny"
+              selectedValue={destiny}
+              onValueChange={(item) => {
+                setDestiny(item);
+              }}
+              onBlur={onBlur}
+              value={value}
+              style={styles.input}
+              >
+                <Picker.Item label="55 Cancri e" value="55 cancri e" />
+                <Picker.Item label="PSO J318.5-22" value="pso j318.5-22" />
+                <Picker.Item label="TRAPPIST-1e" value="trappist-1e" />
+              </Picker>
+            </React.Fragment>
+          )} 
+          name="destiny"
+          />
+          {errors.destiny && <Text style={styles.alert_text}>This is required.</Text>}  
+
+        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.bold_text}>Submit</Text>
         </Pressable>
 
@@ -367,15 +711,16 @@ export default function App() {
           The machine learning model used does not reflect the perspectives or ideologies of any of the team members.
         </Text>
       </LinearGradient>
+    </ScrollView>
     );
   }
 
-  function Formulary({navigation}) {
+  function Result({navigation}) {
     return(
       <Text>
         Hola
       </Text>
-    )
+    );
   }
 
   const Stack = createNativeStackNavigator();
@@ -385,7 +730,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} options={{headerStyle: { backgroundColor: '#5a4aaf', }, headerTintColor: '#fff', headerTitleStyle: { fontWeight: 'bold'}}} />
         <Stack.Screen name="UserData" component={UserData} options={{title: "Enter your information", headerStyle: { backgroundColor: '#5a4aaf', }, headerTintColor: '#fff', headerTitleStyle: { fontWeight: 'bold'}}} />
-        <Stack.Screen name="Formulary" component={Formulary} options={{title: "Preparing for the trip", headerStyle: { backgroundColor: '#5a4aaf', }, headerTintColor: '#fff', headerTitleStyle: { fontWeight: 'bold'}}} />
+        <Stack.Screen name="Result" component={Result} options={{title: " Check your results", headerStyle: { backgroundColor: '#5a4aaf', }, headerTintColor: '#fff', headerTitleStyle: { fontWeight: 'bold'}}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -396,20 +741,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   titles: {
-    fontSize: 30,
+    fontSize: 40,
     fontFamily: 'Roboto',
     textAlign: 'center',
     margin: 20,
     color: '#fff',
+    paddingTop: 20,
   },
   disc: {
     fontSize: 12,
     textAlign: 'center',
     margin: 20,
     color: '#bf97c9',
+    paddingBottom: 30
   },
   input: {
     height: 40, 
@@ -446,6 +793,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
-    fontSize: 20
+    fontSize: 20,
+    textAlign: 'center'
   }
 });
