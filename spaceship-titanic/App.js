@@ -45,10 +45,10 @@ export default function App() {
     data.deck = deck;
     data.side = side;
     data.destiny = destiny;
-    //const response = await fetch(ip_ec2);
-    //const json = await response.json();
+    const response = await fetch('http://3.88.193.156:8080/spaceship/getPrediction', {method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+    const json = await response.json();
     console.log(data);
-    //console.log(json);
+    console.log(json);
   };
 
   function HomeScreen({navigation}) {
@@ -65,7 +65,7 @@ export default function App() {
 
   function UserData({navigation}) {
     return (
-    <ScrollView>
+    <ScrollView maintainVisibleContentPosition={{autoscrollToTopThreshold: 1}}>
       <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
       
         <Text style={styles.titles}>Are you ready to travel across the space?</Text>
@@ -168,7 +168,7 @@ export default function App() {
           rules={{
           required: false,
           }} 
-          render={({ field: { onBlur, value } }) => (
+          render={({ field: { onBlur, value, onFocus } }) => (
             <React.Fragment>
               <Text style={styles.text}>Where do you live?</Text>
               <Picker
@@ -570,9 +570,9 @@ export default function App() {
               value={value}
               style={styles.input}
               >
-                <Picker.Item label="Earth" value="earth" />
-                <Picker.Item label="Europa" value="europa" />
-                <Picker.Item label="Mars" value="mars" />
+                <Picker.Item label="Earth" value="Earth" />
+                <Picker.Item label="Europa" value="Europa" />
+                <Picker.Item label="Mars" value="Mars" />
               </Picker>
             </React.Fragment>
           )} 
@@ -631,13 +631,13 @@ export default function App() {
               value={value}
               style={styles.input}
               >
-                <Picker.Item label="A" value="a" />
-                <Picker.Item label="B" value="b" />
-                <Picker.Item label="C" value="c" />
-                <Picker.Item label="D" value="d" />
-                <Picker.Item label="E" value="e" />
-                <Picker.Item label="F" value="f" />
-                <Picker.Item label="G" value="g" />
+                <Picker.Item label="A" value="A" />
+                <Picker.Item label="B" value="B" />
+                <Picker.Item label="C" value="C" />
+                <Picker.Item label="D" value="D" />
+                <Picker.Item label="E" value="E" />
+                <Picker.Item label="F" value="F" />
+                <Picker.Item label="G" value="G" />
               </Picker>
             </React.Fragment>
           )} 
@@ -663,9 +663,9 @@ export default function App() {
               value={value}
               style={styles.input}
               >
-                <Picker.Item label="T" value="t" />
-                <Picker.Item label="P" value="p" />
-                <Picker.Item label="S" value="s" />
+                <Picker.Item label="T" value="T" />
+                <Picker.Item label="P" value="P" />
+                <Picker.Item label="S" value="S" />
               </Picker>
             </React.Fragment>
           )} 
@@ -691,9 +691,9 @@ export default function App() {
               value={value}
               style={styles.input}
               >
-                <Picker.Item label="55 Cancri e" value="55 cancri e" />
-                <Picker.Item label="PSO J318.5-22" value="pso j318.5-22" />
-                <Picker.Item label="TRAPPIST-1e" value="trappist-1e" />
+                <Picker.Item label="55 Cancri e" value="55 Cancri e" />
+                <Picker.Item label="PSO J318.5-22" value="PSO J318.5-22" />
+                <Picker.Item label="TRAPPIST-1e" value="TRAPPIST-1e" />
               </Picker>
             </React.Fragment>
           )} 
