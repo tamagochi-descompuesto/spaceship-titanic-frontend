@@ -11,6 +11,28 @@ import { BarChart, LineChart } from 'react-native-chart-kit';
 
 export default function App() {
   const [checked, setChecked] = useState(false);
+  const [fetchData, setFetchData] = useState({
+    "survival_ratio_age": {
+      "age":[1],
+      "prob": [1]
+      }, 
+    "survival_ratio_destination": {
+      "55 Cancri e": {
+        "1": ""
+        }, 
+      "PSO J318.5-22": {
+        "1": ""
+        }, 
+      "TRAPPIST-1e": {
+        "1": ""
+        }
+    }, 
+    "transported_vs_dead": {
+      "dead": 0, 
+      "transported": 0
+      }
+  });
+  const [flag, setFlag] = useState(true);
   const [country, setCountry] = useState('');
   const [passengerGroup, setPassengerGroup] = useState('');
   const [homePlanet, setHomePlanet] = useState('');
@@ -47,7 +69,7 @@ export default function App() {
     deck !== "" ? data.deck = deck : data.deck;
     side !== "" ? data.side = side : data.side;
     destiny !== "" ? data.destiny = destiny : data.destiny;
-    const response = await fetch('http://54.86.196.239:8080/spaceship/getPrediction', 
+    const response = await fetch('http://10.48.70.114:8080/spaceship/getPrediction', 
     {
       method: 'POST', 
       body: JSON.stringify(data), 
@@ -66,8 +88,9 @@ export default function App() {
   const sendEmail = async () => {
     console.log(getValues("email"));
     console.log(getValues("name"));
-    data = {name: getValues("name"), email: getValues("email")};
-    response = await fetch('http://54.86.196.239:8080/spaceship/howToSurvive', 
+    const data = {name: getValues("name"), email: getValues("email")};
+    console.log(data);
+    response = await fetch('http://10.48.70.114:8080/spaceship/howToSurvive', 
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -80,27 +103,40 @@ export default function App() {
     console.log(json);
   }
 
+  async function GetData() {
+    response = await fetch('http://10.48.70.114:8080/spaceship/info');
+    const json = await response.json();
+    setFetchData(json);
+    setFlag(false);
+    return json;
+  }
+
   function HomeScreen({navigation}) {
+    if(flag){
+      GetData();
+      console.log(fetchData);
+    }
+    
     const barData = {
       labels: ['Transported', 'Not transported'],
       datasets: [
         {
-          data: [45, 25],
+          data: [fetchData.transported_vs_dead.transported, fetchData.transported_vs_dead.dead],
         },
       ],
     };
 
     const lineData = {
-      labels: [10, 20, 30, 40, 50, 60, 70, 80],
+      labels: fetchData.survival_ratio_age.age,
       datasets: [{
-        data: [50.4, 45.0, 70.2, 99.5, 12.1, 10.0, 20.1, 23.4]
+        data: fetchData.survival_ratio_age.prob
       }]
     }
 
     const lineData2 = {
       labels: ['55 Cancri e', 'PSO J318.5-22', 'TRAPPIST-1e'],
       datasets: [{
-        data: [20, 30, 110]
+        data: [fetchData.survival_ratio_destination['55 Cancri e']['1'], fetchData.survival_ratio_destination['PSO J318.5-22']['1'], fetchData.survival_ratio_destination['TRAPPIST-1e']['1']]
       }]
     }
 
@@ -155,7 +191,7 @@ export default function App() {
           chartConfig={{
             backgroundGradientFrom: '#3b045c',
             backgroundGradientTo: '#262625',
-            decimalPlaces: 0,
+            decimalPlaces: 1,
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
               borderRadius: 16
@@ -173,11 +209,12 @@ export default function App() {
           data={lineData2}
           width={Dimensions.get('window').width - 100}
           height={220}
+          yAxisSuffix={'%'}
           fromZero
           chartConfig={{
             backgroundGradientFrom: '#3b045c',
             backgroundGradientTo: '#262625',
-            decimalPlaces: 0,
+            decimalPlaces: 1,
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
               borderRadius: 16
