@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, Pressable, View, Button, ScrollView, Alert, Image } from 'react-native';
+import { StyleSheet, Text, TextInput, Pressable, View, Button, ScrollView, Alert, Image, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useForm, Controller } from 'react-hook-form';
 import {Picker} from '@react-native-picker/picker';
@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Checkbox from 'expo-checkbox';
+import { BarChart, LineChart } from 'react-native-chart-kit';
 
 export default function App() {
   const [checked, setChecked] = useState(false);
@@ -16,8 +17,7 @@ export default function App() {
   const [deck, setDeck] = useState('');
   const [side, setSide] = useState('');
   const [destiny, setDestiny] = useState('');
-  //CAMBIAAAAAAAR
-  const [transported, setTransported] = useState(false);
+  const [transported, setTransported] = useState();
   const {control, handleSubmit, formState: {errors}, getValues } = useForm({
     defaultValues: {
       name: '',
@@ -47,36 +47,149 @@ export default function App() {
     deck !== "" ? data.deck = deck : data.deck;
     side !== "" ? data.side = side : data.side;
     destiny !== "" ? data.destiny = destiny : data.destiny;
-    //const response = await fetch('http://3.88.193.156:8080/spaceship/getPrediction', {method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
-    //const json = await response.json();
+    const response = await fetch('http://54.86.196.239:8080/spaceship/getPrediction', 
+    {
+      method: 'POST', 
+      body: JSON.stringify(data), 
+      headers: {
+        'Content-Type': 'application/json', 
+        'Accept': 'application/json'
+      }
+    }).catch((err)=> console.log('Error: ' + err.message));
+    const json = await response.json();
     console.log(data);
-    //console.log(json);
-    //setTransported(json.Transported);
+    console.log(json);
+    setTransported(json.Transported);
     console.log(transported);
   };
 
   const sendEmail = async () => {
-    //Here send email
     console.log(getValues("email"));
+    console.log(getValues("name"));
+    data = {name: getValues("name"), email: getValues("email")};
+    response = await fetch('http://54.86.196.239:8080/spaceship/howToSurvive', 
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    }).catch((err) => console.log('Error: ' + err.message));
+    const json = await response.json();
+    console.log(json);
   }
 
   function HomeScreen({navigation}) {
+    const barData = {
+      labels: ['Transported', 'Not transported'],
+      datasets: [
+        {
+          data: [45, 25],
+        },
+      ],
+    };
+
+    const lineData = {
+      labels: [10, 20, 30, 40, 50, 60, 70, 80],
+      datasets: [{
+        data: [50.4, 45.0, 70.2, 99.5, 12.1, 10.0, 20.1, 23.4]
+      }]
+    }
+
+    const lineData2 = {
+      labels: ['55 Cancri e', 'PSO J318.5-22', 'TRAPPIST-1e'],
+      datasets: [{
+        data: [20, 30, 110]
+      }]
+    }
+
     return (
       <ScrollView>
       <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
         <Text style={styles.titles}>Welcome to Perros Sarnosos KFC</Text>
         <Image source={require('./assets/spaceship_titanic_no_bg.png')} />
         <Text style={styles.text}>
-          We are a specialized insurance agency that cares about your security in outer space trips.
+          We are a life insurance agency that specializes in interstellar travel.
         </Text>
         <Text style={styles.text}>
-          We make sure that you are prepared for your trip using a Machine Learning model that can predict accurately your chances of surviving.
+        Our job is to make sure that you are prepared for your trip.
+        For this important task, we created a customizable machine learning model 
+        that is able to predict and improve your success rate with more than 80% of accuracy
         </Text>
         <Text style={styles.text}>
-          Here are some graphs that show the insights of our clients:
+          This is some information collected from our model that you may be interested in:
         </Text>
+
+        <Text style={styles.chart_text}>
+          Transported predictions vs not transpoted predictions.
+        </Text>
+        <BarChart 
+          data={barData}
+          width={Dimensions.get('window').width - 100}
+          height={220}
+          fromZero
+          chartConfig={{
+            backgroundGradientFrom: '#3b045c',
+            backgroundGradientTo: '#262625',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16
+            }
+          }}
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}
+        />
+
+        <Text style={styles.chart_text}>
+          Age vs probability of a positive prediction.
+        </Text>
+        <LineChart 
+          data={lineData}
+          width={Dimensions.get('window').width - 100}
+          height={220}
+          fromZero
+          chartConfig={{
+            backgroundGradientFrom: '#3b045c',
+            backgroundGradientTo: '#262625',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16
+            }
+          }}
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}/>
+
+        <Text style={styles.chart_text}>
+          Probability of a good prediction depending on the destiny.
+        </Text>
+        <BarChart 
+          data={lineData2}
+          width={Dimensions.get('window').width - 100}
+          height={220}
+          fromZero
+          chartConfig={{
+            backgroundGradientFrom: '#3b045c',
+            backgroundGradientTo: '#262625',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16
+            }
+          }}
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}/>
+
         <Text style={styles.text}>
-          INSERTE GRÁFICAS PERRONAS AQUÍ XD 
+          Would you like to test our model?
         </Text>
         <Pressable style={styles.button} onPress={() => {
             navigation.navigate('UserData')
@@ -84,7 +197,7 @@ export default function App() {
             <Text style={styles.bold_text}>
               View my chances
             </Text>
-          </Pressable>
+        </Pressable>
       </LinearGradient>
       </ScrollView>
     );
@@ -746,14 +859,19 @@ export default function App() {
   }
 
   function Result({navigation}) {
-    if(transported){
+    if(transported === undefined) {
+      return(
+        <Text style={styles.message_error}>Error connecting to the server</Text>
+      );
+    }else if(transported){
       return(
         <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
           <Text style={styles.titles}>
-            Congratulations! your profile meets the requirements to survive the trip.
+            Congratulations! Your profile indicates that you have more than 80% chance of success
           </Text>
+          <Image source={require('./assets/sucess.gif')} />
           <Text style={styles.text}>
-            Do yo wish to know more about how we work and stats related to more trips?
+            Would you like to know more about how we work and more stats related to other trips?
             Visit our homepage with the button down below.
           </Text>
           <Pressable style={styles.button} onPress={() => {
@@ -763,15 +881,17 @@ export default function App() {
           </Pressable>
         </LinearGradient>
       );
-    }else{
+    }else if(!transported){
       return(
+        <ScrollView>
         <LinearGradient colors={['rgba(59,78,216,1)', 'rgba(90,74,175,1)', 'rgba(27,24,39,1)']} style={styles.container}>
           <Text style={styles.titles}>
-            Sorry, your profile doesn't meet the requirements to survive the trip.
+            We're sorry, but it seems that your profile needs some enhancements for the trip.
           </Text>
+          <Image source={require('./assets/failure.png')} />
           <Text style={styles.text}>
-            But don't worry, we can help you to increase your chances of surviving.
-            Press the button below to send you an email with all the information you need to know to improve your chances!.
+            But don't worry, your safety is our priority and we can help you to reach up to an 80% of success rate.
+            Press the button down below and we'll send you an e-mail with the necessary information!
           </Text>
           <Pressable style={styles.button} onPress={() => {
             sendEmail();
@@ -792,6 +912,7 @@ export default function App() {
             <Text style={styles.bold_text}>Increase my chances!</Text>
           </Pressable>
         </LinearGradient>
+        </ScrollView>
       );
     }
   }
@@ -867,6 +988,20 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 20,
+    textAlign: 'center',
+    margin: 10
+  },
+  message_error: {
+    fontSize: 20,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'black',
+    textAlign: 'center'
+  },
+  chart_text: {
+    color: '#e9daf0',
+    fontSize: 15,
     textAlign: 'center',
     margin: 10
   }
